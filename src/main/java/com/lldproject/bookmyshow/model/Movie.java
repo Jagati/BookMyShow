@@ -14,6 +14,7 @@ public class Movie extends BaseModel{
     private String director;
     private String year;
     private String genre;
+    private String description;
     @Enumerated
     private Rating rating;
     @Enumerated

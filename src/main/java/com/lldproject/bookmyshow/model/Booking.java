@@ -13,6 +13,8 @@ public class Booking extends BaseModel{
     private Date bookingDate;
     @ManyToOne
     private User bookedBy;
+    @ManyToOne
+    private Show show;
     @ManyToMany
     private List<ShowSeat> bookedSeats;
     private int totalAmount;
