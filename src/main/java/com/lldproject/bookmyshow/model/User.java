@@ -11,7 +11,6 @@ import java.util.List;
 @Entity(name="users")
 public class User extends BaseModel{
     private String name;
-    private String email;
-    @OneToMany //User:Bookings 1:M
+    private String email;//User:Bookings 1:M
     private List<Booking> bookings;
 }
