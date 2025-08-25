@@ -1,12 +1,13 @@
 package com.lldproject.bookmyshow.model;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
-
+@Getter
+@Setter
+@Entity
 public class Screen extends BaseModel {
     private String screenNumber;
     @OneToMany
