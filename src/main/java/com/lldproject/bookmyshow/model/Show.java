@@ -19,9 +19,9 @@ public class Show extends BaseModel{
     private Date startTime;
     @ManyToOne
     private Screen screen;
-    @OneToMany
+    @OneToMany(mappedBy = "show")
     private List<ShowSeat> showSeats;
-    @OneToMany
+    @OneToMany(mappedBy = "show")
     private List<ShowSeatType> showSeatTypes;
 
 
