@@ -15,7 +15,7 @@ public class BookingController {
     public BookingController(BookingService bookingService){
         this.bookingService = bookingService;
     }
-    public BookTicketResponseDto BookTicket(BookTicketRequestDto bookTicketRequestDto){
+    public BookTicketResponseDto bookTicket(BookTicketRequestDto bookTicketRequestDto){
         BookTicketResponseDto bookTicketResponseDto = new BookTicketResponseDto();
         try{
             Booking booking = bookingService.bookTicket(bookTicketRequestDto.getShowId(), bookTicketRequestDto.getUserId(), bookTicketRequestDto.getShowSeatIds());

@@ -14,6 +14,6 @@ import java.util.List;
 @Repository
 public interface ShowSeatRepository extends JpaRepository<ShowSeat,Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT ss from ShowSeat ss WHERE ss.id IN :ids AND ss.status = :status")
-    List<ShowSeat> findAllByIdAndStatus(@Param("ids")Iterable<Long>ids, ShowSeatStatus status);
+    @Query("SELECT ss FROM ShowSeat ss WHERE ss.id IN :ids AND ss.status = :status")
+    List<ShowSeat> findAllByIdAndStatus(@Param("ids")List<Long>ids, @Param("status") ShowSeatStatus status);
 }

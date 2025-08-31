@@ -29,6 +29,8 @@ public class BookingService {
     }
     @Transactional
     public Booking bookTicket(Long showId, Long userId, List<Long> showSeatIds){
+        String threadName = Thread.currentThread().getName();
+        System.out.println("Running thread: " + threadName + ". Starting ticket booking for user: "+userId);
         //Get the user from db
         Optional<User> userOp=userRepository.findById(userId);
         if(userOp.isEmpty()){
@@ -45,14 +47,20 @@ public class BookingService {
         List<ShowSeat> showSeats = showSeatRepository.findAllByIdAndStatus(showSeatIds, ShowSeatStatus.AVAILABLE);
         //Check if all seats are available
         if(showSeats.size()<showSeatIds.size()){
+            System.out.println("[" + threadName + "] " + "Seat availability check failed. Found " + showSeats.size() + " available seats out of "+ showSeatIds.size() + "requested.");
             throw new RuntimeException("Show Seats not available");
         }
+        System.out.println("[" + threadName + "] " + "Seat availability check successful. Found "+ showSeats.size() + " available seats out of "+ showSeatIds.size() + "available seats.");
         //If yes, block the seats
+        System.out.println("[" + threadName + "] Updating seat status to BLOCKED for " + showSeats.size() + " seats");
         for(ShowSeat showSeat:showSeats){
+
             showSeat.setStatus(ShowSeatStatus.BLOCKED);
         }
         showSeatRepository.saveAll(showSeats);
+        System.out.println("["+threadName+"] " + "Seats blocked successfully");
         //Create booking
+        System.out.println("["+threadName+"] " + "Creating a booking");
         Booking booking=new Booking();
         booking.setShow(show);
         booking.setBookedBy(user);
@@ -60,9 +68,17 @@ public class BookingService {
         booking.setBookedSeats(showSeats);
         booking.setBookingStatus(BookingStatus.PENDING);
         //Get the seat type
+        ShowSeat bookedSeat = booking.getBookedSeats().get(0); //Getting one seat from the booked seats
+        SeatType bookedSeatType = bookedSeat.getSeat().getSeatType(); //Fetching the type
+        ShowSeatType bookedShowSeatType = new  ShowSeatType();
+        bookedShowSeatType.setShow(show);
+        bookedShowSeatType.setSeatType(bookedSeatType);
+        bookedShowSeatType.setPrice(50);
         //Implement logic to get the total price
-        booking.setTotalAmount(100);
+        booking.setTotalAmount((int) (bookedShowSeatType.getPrice()*booking.getNumSeats()));
         booking.setNumSeats(showSeats.size());
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking);
+        System.out.println("[" + threadName + "] Booking created successfully. Booking ID: " + savedBooking.getId());
+        return savedBooking;
     }
 }
