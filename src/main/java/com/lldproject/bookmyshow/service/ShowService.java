@@ -86,6 +86,7 @@ public class ShowService {
             showSeats.add(showSeat);
         }
         showSeatRepository.saveAll(showSeats);
+        show.setShowSeats(showSeats);
         return savedShow.getId();
     }
 }
