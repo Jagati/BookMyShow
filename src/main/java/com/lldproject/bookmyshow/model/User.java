@@ -15,4 +15,5 @@ public class User extends BaseModel{
     private String password;
     @OneToMany(mappedBy = "bookedBy")
     private List<Booking> bookings;
+    private UserRole userRole;
 }

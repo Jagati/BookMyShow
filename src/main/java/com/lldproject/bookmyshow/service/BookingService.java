@@ -1,5 +1,8 @@
 package com.lldproject.bookmyshow.service;
 
+import com.lldproject.bookmyshow.exceptions.ShowNotFoundException;
+import com.lldproject.bookmyshow.exceptions.ShowSeatsNotFoundException;
+import com.lldproject.bookmyshow.exceptions.UserNotFoundException;
 import com.lldproject.bookmyshow.model.*;
 import com.lldproject.bookmyshow.repository.BookingRepository;
 import com.lldproject.bookmyshow.repository.ShowRepository;
@@ -28,19 +31,19 @@ public class BookingService {
         this.userRepository = userRepository;
     }
     @Transactional
-    public Booking bookTicket(Long showId, Long userId, List<Long> showSeatIds){
+    public Booking bookTicket(Long showId, Long userId, List<Long> showSeatIds) throws UserNotFoundException, ShowNotFoundException, ShowSeatsNotFoundException{
         String threadName = Thread.currentThread().getName();
         System.out.println("Running thread: " + threadName + ". Starting ticket booking for user: "+userId);
         //Get the user from db
         Optional<User> userOp=userRepository.findById(userId);
         if(userOp.isEmpty()){
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found");
         }
         User user=userOp.get();
         //Get the show from db
         Optional<Show> showOp = showRepository.findById(showId);
         if(showOp.isEmpty()){
-            throw new RuntimeException("Show not found");
+            throw new ShowNotFoundException("Show not found");
         }
         Show show=showOp.get();
         //Get the show seats from db
@@ -48,9 +51,9 @@ public class BookingService {
         //Check if all seats are available
         if(showSeats.size()<showSeatIds.size()){
             System.out.println("[" + threadName + "] " + "Seat availability check failed. Found " + showSeats.size() + " available seats out of "+ showSeatIds.size() + "requested.");
-            throw new RuntimeException("Show Seats not available");
+            throw new ShowSeatsNotFoundException("Show Seats not available");
         }
-        System.out.println("[" + threadName + "] " + "Seat availability check successful. Found "+ showSeats.size() + " available seats out of "+ showSeatIds.size() + "available seats.");
+        System.out.println("[" + threadName + "] " + "Seat availability check successful. Found "+ showSeats.size() + " available seats out of "+ showSeatIds.size() + "seats.");
         //If yes, block the seats
         System.out.println("[" + threadName + "] Updating seat status to BLOCKED for " + showSeats.size() + " seats");
         for(ShowSeat showSeat:showSeats){
@@ -67,15 +70,15 @@ public class BookingService {
         booking.setBookingDate(new Date());
         booking.setBookedSeats(showSeats);
         booking.setBookingStatus(BookingStatus.PENDING);
-        //Get the seat type
-        ShowSeat bookedSeat = booking.getBookedSeats().get(0); //Getting one seat from the booked seats
-        SeatType bookedSeatType = bookedSeat.getSeat().getSeatType(); //Fetching the type
-        ShowSeatType bookedShowSeatType = new  ShowSeatType();
-        bookedShowSeatType.setShow(show);
-        bookedShowSeatType.setSeatType(bookedSeatType);
-        bookedShowSeatType.setPrice(50);
-        //Implement logic to get the total price
-        booking.setTotalAmount((int) (bookedShowSeatType.getPrice()*booking.getNumSeats()));
+//        //Get the seat type
+//        ShowSeat bookedSeat = booking.getBookedSeats().get(0); //Getting one seat from the booked seats
+//        SeatType bookedSeatType = bookedSeat.getSeat().getSeatType(); //Fetching the type
+//        ShowSeatType bookedShowSeatType = new  ShowSeatType();
+//        bookedShowSeatType.setShow(show);
+//        bookedShowSeatType.setSeatType(bookedSeatType);
+//        bookedShowSeatType.setPrice(50);
+//        //Implement logic to get the total price
+//        booking.setTotalAmount((int) (bookedShowSeatType.getPrice()*booking.getNumSeats()));
         booking.setNumSeats(showSeats.size());
         Booking savedBooking = bookingRepository.save(booking);
         System.out.println("[" + threadName + "] Booking created successfully. Booking ID: " + savedBooking.getId());

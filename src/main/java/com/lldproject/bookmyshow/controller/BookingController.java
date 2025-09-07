@@ -3,6 +3,9 @@ package com.lldproject.bookmyshow.controller;
 import com.lldproject.bookmyshow.dto.BookTicketRequestDto;
 import com.lldproject.bookmyshow.dto.BookTicketResponseDto;
 import com.lldproject.bookmyshow.dto.ResponseStatus;
+import com.lldproject.bookmyshow.exceptions.ShowNotFoundException;
+import com.lldproject.bookmyshow.exceptions.ShowSeatsNotFoundException;
+import com.lldproject.bookmyshow.exceptions.UserNotFoundException;
 import com.lldproject.bookmyshow.model.Booking;
 import com.lldproject.bookmyshow.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,7 @@ public class BookingController {
             bookTicketResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
             bookTicketResponseDto.setMessage("Booking confirmed. Please make the payment.");
         }
-        catch(Exception e){
+        catch(UserNotFoundException | ShowNotFoundException | ShowSeatsNotFoundException e){
             bookTicketResponseDto.setResponseStatus(ResponseStatus.FAILURE);
             bookTicketResponseDto.setMessage("Booking failed. "+e.getMessage());
         }

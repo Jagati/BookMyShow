@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @Entity
 public class ShowSeatType extends BaseModel {
+    private String name;
     @ManyToOne
     private Show show;
-    @ManyToOne
-    private SeatType seatType;
     private double price;
 }

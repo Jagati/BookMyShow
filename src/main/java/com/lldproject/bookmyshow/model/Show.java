@@ -23,6 +23,8 @@ public class Show extends BaseModel{
     private List<ShowSeat> showSeats;
     @OneToMany(mappedBy = "show")
     private List<ShowSeatType> showSeatTypes;
+    private Language language;
+    private Features feature;
 
 
 

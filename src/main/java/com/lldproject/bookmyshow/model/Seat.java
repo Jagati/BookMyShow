@@ -12,6 +12,4 @@ public class Seat extends BaseModel{
     private String seatNumber;
     private int seatRow;
     private int seatCol;
-    @ManyToOne
-    private SeatType seatType;
 }
