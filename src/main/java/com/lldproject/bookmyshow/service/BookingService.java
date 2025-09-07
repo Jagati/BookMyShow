@@ -70,16 +70,11 @@ public class BookingService {
         booking.setBookingDate(new Date());
         booking.setBookedSeats(showSeats);
         booking.setBookingStatus(BookingStatus.PENDING);
-//        //Get the seat type
-//        ShowSeat bookedSeat = booking.getBookedSeats().get(0); //Getting one seat from the booked seats
-//        SeatType bookedSeatType = bookedSeat.getSeat().getSeatType(); //Fetching the type
-//        ShowSeatType bookedShowSeatType = new  ShowSeatType();
-//        bookedShowSeatType.setShow(show);
-//        bookedShowSeatType.setSeatType(bookedSeatType);
-//        bookedShowSeatType.setPrice(50);
-//        //Implement logic to get the total price
-//        booking.setTotalAmount((int) (bookedShowSeatType.getPrice()*booking.getNumSeats()));
         booking.setNumSeats(showSeats.size());
+        //Get the seat type and calculate the total cost of booking
+        ShowSeat bookedSeat = booking.getBookedSeats().get(0); //Getting one seat from the booked seats
+        int seatCost = bookedSeat.getShowSeatType().getPrice();
+        booking.setTotalAmount(seatCost*booking.getNumSeats());
         Booking savedBooking = bookingRepository.save(booking);
         System.out.println("[" + threadName + "] Booking created successfully. Booking ID: " + savedBooking.getId());
         return savedBooking;

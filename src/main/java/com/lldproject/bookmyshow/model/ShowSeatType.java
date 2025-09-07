@@ -12,5 +12,5 @@ public class ShowSeatType extends BaseModel {
     private String name;
     @ManyToOne
     private Show show;
-    private double price;
+    private int price;
 }

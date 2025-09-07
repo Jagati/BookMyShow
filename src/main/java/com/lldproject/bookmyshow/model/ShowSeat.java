@@ -18,4 +18,6 @@ public class ShowSeat extends BaseModel{
     @Enumerated
     private ShowSeatStatus status;
     private Date blockedAt;
+    @ManyToOne
+    private ShowSeatType showSeatType;
 }
