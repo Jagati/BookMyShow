@@ -1,6 +1,7 @@
 package com.lldproject.bookmyshow.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
@@ -13,11 +14,11 @@ import java.util.List;
 @Setter
 @Entity(name="shows")
 public class Show extends BaseModel{
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Movie movie;
     private Date showDate;
     private Date startTime;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Screen screen;
     @OneToMany(mappedBy = "show")
     private List<ShowSeat> showSeats;

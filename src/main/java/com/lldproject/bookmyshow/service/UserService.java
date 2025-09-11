@@ -35,9 +35,6 @@ public class UserService {
             throw new Exception("User not registered");
         }
         User user = userOp.get();
-        if(user.getPassword().equals(password)){
-            return true;
-        }
-        return false;
+        return user.getPassword().equals(password);
     }
 }

@@ -1,8 +1,6 @@
 package com.lldproject.bookmyshow.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
@@ -11,13 +9,14 @@ import java.util.Date;
 @Setter
 @Entity
 public class ShowSeat extends BaseModel{
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Show show;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Seat seat;
     @Enumerated
     private ShowSeatStatus status;
     private Date blockedAt;
     @ManyToOne
+    @Enumerated
     private ShowSeatType showSeatType;
 }

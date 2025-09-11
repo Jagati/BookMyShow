@@ -6,6 +6,7 @@ import com.lldproject.bookmyshow.model.*;
 import com.lldproject.bookmyshow.repository.*;
 import com.lldproject.bookmyshow.utils.DateUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,13 +20,15 @@ public class ShowService {
     private MovieRepository movieRepository;
     private ShowRepository showRepository;
     private ShowSeatRepository  showSeatRepository;
+    private ShowSeatTypeRepository showSeatTypeRepository;
 
-    public ShowService(UserRepository userRepository, ScreenRepository screenRepository, MovieRepository movieRepository, ShowRepository showRepository, ShowSeatRepository showSeatRepository) {
+    public ShowService(UserRepository userRepository, ScreenRepository screenRepository, MovieRepository movieRepository, ShowRepository showRepository, ShowSeatRepository showSeatRepository, ShowSeatTypeRepository showSeatTypeRepository) {
         this.userRepository = userRepository;
         this.screenRepository = screenRepository;
         this.movieRepository = movieRepository;
         this.showRepository = showRepository;
         this.showSeatRepository = showSeatRepository;
+        this.showSeatTypeRepository = showSeatTypeRepository;
     }
 
     public long createShow(long user_id, long movie_id, long screen_id, Date start_time, Date end_time, Language language, Features supported_feature, List<ShowSeatPricing> seatPricing) throws UserNotFoundException, UnAuthorizedAccessException, ScreenNotFoundException, MovieNotFoundException, FeatureNotSupportedException, InvalidDateException, LanguageNotSupportedException {
@@ -65,28 +68,33 @@ public class ShowService {
         show.setStartTime(start_time);
         show.setLanguage(language);
         show.setFeature(supported_feature);
-        List<ShowSeatType> showSeatTypes = new ArrayList<>();
-        for(ShowSeatPricing seatPrice: seatPricing) {
-            ShowSeatType showSeatType = new ShowSeatType();
-            showSeatType.setName(seatPrice.getShowSeatName());
-            showSeatType.setPrice(seatPrice.getPrice());
-            showSeatTypes.add(showSeatType);
-        }
-        show.setShowSeatTypes(showSeatTypes);
         Show savedShow= showRepository.save(show);
+
+        if(!CollectionUtils.isEmpty(seatPricing)) {
+            List<ShowSeatType> showSeatTypes = new ArrayList<>();
+            for(ShowSeatPricing seatPrice: seatPricing) {
+                ShowSeatType showSeatType = new ShowSeatType();
+                showSeatType.setName(seatPrice.getShowSeatName());
+                showSeatType.setPrice(seatPrice.getPrice());
+                showSeatTypes.add(showSeatType);
+            }
+            showSeatTypeRepository.saveAll(showSeatTypes);
+        }
+
 
         //Get seats in the screen and create show seats
         List<Seat> seats = screen.getSeats();
-        List<ShowSeat> showSeats = new ArrayList<>();
-        for(Seat seat : seats) {
-            ShowSeat showSeat = new ShowSeat();
-            showSeat.setSeat(seat);
-            showSeat.setShow(savedShow);
-            showSeat.setStatus(ShowSeatStatus.AVAILABLE);
-            showSeats.add(showSeat);
+        if(!CollectionUtils.isEmpty(seats)) {
+            List<ShowSeat> showSeats = new ArrayList<>();
+            for(Seat seat : seats) {
+                ShowSeat showSeat = new ShowSeat();
+                showSeat.setSeat(seat);
+                showSeat.setShow(savedShow);
+                showSeat.setStatus(ShowSeatStatus.AVAILABLE);
+                showSeats.add(showSeat);
+            }
+            showSeatRepository.saveAll(showSeats);
         }
-        showSeatRepository.saveAll(showSeats);
-        show.setShowSeats(showSeats);
         return savedShow.getId();
     }
 }
